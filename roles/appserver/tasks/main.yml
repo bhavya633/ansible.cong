@@ -1,0 +1,26 @@
+---
+- name: create floders for apps
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ APP_SETUP_DIR }}"
+    - "{{ TOMCAT_APP_DIR }}"
+
+- name: download java and tomcat
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ APP_SETUP_DIR }}"
+  with_items:
+    - "{{ TOMCAT_URL }}"
+
+- name: extracting tomcat
+  unarchive:
+    src: "{{ APP_SETUP_DIR }}/{{ TOMCAT_ZIP_FILE }}"
+    dest: "{{ TOMCAT_APP_DIR }}"
+    remote_src: "{{ IS_SOURCE_IS_REMOTE }}"
+    extra_opts:
+      - --strip-components=1
+
+- name: starting tomcat
+  command: nohup {{ TOMCAT_APP_DIR }}/bin/catalina.sh run >> catalina.logs &

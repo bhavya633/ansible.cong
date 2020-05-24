@@ -1,5 +1,5 @@
 ---
- - hosts:
+ - hosts: dbserver
    become: yes
    roles:
     - dbserver

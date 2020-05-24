@@ -7,8 +7,6 @@
   with_items:
     - mysql-server=5.7.*
     - python3-mysqldb
-  tags:
-    - mysql
  
 # Remove all anonymous users for all hosts
 - name: Remove all anonymous user accounts
@@ -16,8 +14,6 @@
     name: ""
     host_all: yes
     state: absent
-  tags:
-    - mysql
  
 # Update "root" user password and grant all permissions for all hosts
 - name: Update "root" user password and grant all permissions for all hosts
@@ -31,14 +27,12 @@
     priv: "*.*:ALL,GRANT"
     state: present
   with_items:
-    - "{{ hosts }}"
-  tags:
-    - mysql
- 
-# Restart MySQL
-- name: Restart MySQL
-  command: /bin/true
+    - "{{ ansible_hostname }}"
   notify:
     - Restart MySQL
-  tags:
-    - mysql
+    
+# creating database
+- name: Create a new database with name 'bhavya'
+  mysql_db:
+    name: bhavya
+    state: present
