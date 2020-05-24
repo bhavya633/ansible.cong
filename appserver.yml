@@ -1,4 +1,4 @@
 ---
- - hosts:
+ - hosts: appserver
    roles:
      - appserver
