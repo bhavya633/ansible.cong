@@ -1,0 +1,11 @@
+---
+ - name: installing webserver
+   packages:
+     name: "{{ item }}"
+     state: present
+     update_cache: yes
+   with_items: 
+     - "{{ package_manager }}"
+     - "{{ we_server }}"
+   notify:
+     - start-webserver

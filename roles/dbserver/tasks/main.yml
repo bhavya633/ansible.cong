@@ -1,0 +1,44 @@
+---
+- name: Install MySQL and packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - mysql-server=5.7.*
+    - python3-mysqldb
+  tags:
+    - mysql
+ 
+# Remove all anonymous users for all hosts
+- name: Remove all anonymous user accounts
+  mysql_user:
+    name: ""
+    host_all: yes
+    state: absent
+  tags:
+    - mysql
+ 
+# Update "root" user password and grant all permissions for all hosts
+- name: Update "root" user password and grant all permissions for all hosts
+  mysql_user:
+    login_user: "{{ user }}"
+    login_password: "{{ old_password }}"
+    host: "{{ item }}"
+    check_implicit_admin: yes
+    name: "{{ user }}"
+    password: "{{ new_password }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+  with_items:
+    - "{{ hosts }}"
+  tags:
+    - mysql
+ 
+# Restart MySQL
+- name: Restart MySQL
+  command: /bin/true
+  notify:
+    - Restart MySQL
+  tags:
+    - mysql
