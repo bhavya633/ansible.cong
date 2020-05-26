@@ -1,26 +1,35 @@
 ---
-- name: create floders for apps
+
+- name: create floder for appserver
   file:
     dest: "{{ item }}"
     state: directory
   with_items:
-    - "{{ APP_SETUP_DIR }}"
     - "{{ TOMCAT_APP_DIR }}"
 
-- name: download java and tomcat
+- name: download tomcat
   get_url:
     url: "{{ item }}"
-    dest: "{{ APP_SETUP_DIR }}"
+    dest: "{{ APP_HOME_DIR }}"
   with_items:
     - "{{ TOMCAT_URL }}"
 
 - name: extracting tomcat
   unarchive:
-    src: "{{ APP_SETUP_DIR }}/{{ TOMCAT_ZIP_FILE }}"
+    src: "{{ APP_HOME_DIR }}/{{ TOMCAT_ZIP_FILE }}"
     dest: "{{ TOMCAT_APP_DIR }}"
     remote_src: "{{ IS_SOURCE_IS_REMOTE }}"
     extra_opts:
       - --strip-components=1
+      
+- name: coping Config.properties file
+  template:
+    src: "Config.properties"
+    dest: "{{ TOMCAT_APP_DIR }}/webapps/App-Info-release/Config.properties"
 
 - name: starting tomcat
-  command: nohup {{ TOMCAT_APP_DIR }}/bin/catalina.sh run >> catalina.logs &
+  shell: "nohup sh catalina.sh run >> ../logs/bhavya.log &"
+  args:
+    chdir: "{{ TOMCAT_APP_DIR }}/bin"
+  environment:
+    JAVA_HOME: /home/testuser/java

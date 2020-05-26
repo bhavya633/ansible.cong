@@ -1,38 +1,45 @@
 ---
-- name: Install MySQL and packages
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: yes
-  with_items:
-    - mysql-server=5.7.*
-    - python3-mysqldb
- 
-# Remove all anonymous users for all hosts
-- name: Remove all anonymous user accounts
-  mysql_user:
-    name: ""
-    host_all: yes
-    state: absent
- 
-# Update "root" user password and grant all permissions for all hosts
-- name: Update "root" user password and grant all permissions for all hosts
-  mysql_user:
-    login_user: "{{ user }}"
-    login_password: "{{ old_password }}"
-    host: "{{ item }}"
-    check_implicit_admin: yes
-    name: "{{ user }}"
-    password: "{{ new_password }}"
-    priv: "*.*:ALL,GRANT"
-    state: present
-  with_items:
-    - "{{ ansible_hostname }}"
-  notify:
-    - Restart MySQL
-    
-# creating database
-- name: Create a new database with name 'bhavya'
-  mysql_db:
-    name: bhavya
-    state: present
+- name: Installs the MySQL server
+  block:
+  - name: Installing the MySQL server
+    apt: 
+      name: "{{ item }} "
+      state: present
+      update_cache: yes
+    with_items:
+      - mysql-server
+      - python3-pymysql
+    notify:
+    - start-db
+
+# MySQL Configuration
+## Update the Root Password
+  - name: Sets the root password
+    mysql_user:
+      name: root
+      password: "{{ MYSQL_ROOT_PWD }}"
+      login_unix_socket: /var/run/mysqld/mysqld.sock
+    notify:
+    - restart-db
+  when: CREATE_DB_SERVER == True
+  tags:
+    - never
+    - create-db-server
+    - install-all
+
+# Import DB
+- name: Create DB Objects
+  block:
+  - name: copying the SQL file
+    template:
+      src: "objects.sql"
+      dest: "{{ DB_HOME}}/objects.sql"
+
+  - name: Creating the DB Objects
+    shell: "/usr/bin/mysql -u root --password={{ MYSQL_ROOT_PWD }} <objects.sql"
+    args:
+      chdir: "{{ DB_HOME }}"
+  tags:
+    - never
+    - import-db
+    - install-all
