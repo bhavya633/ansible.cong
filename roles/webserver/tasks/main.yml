@@ -13,6 +13,6 @@
  - name: copying tomcat.conf file
    template:
      src: "tomcat.conf"
-     dest: "/etc/nginx/sites-available/tomcat.conf"
+     dest: "/etc/nginx/sites-available/default"
    notify:
      - restart-webserver
