@@ -6,10 +6,10 @@ APP_HOME_DIR: "/home/testuser"
 TOMCAT_APP_DIR: "{{APP_HOME_DIR}}/tomcat"
 
 #tomcat url
-TOMCAT_URL: "https://bharath-pantala-local.s3.ap-south-1.amazonaws.com/install-2020.1.tar.gz"
+TOMCAT_URL: "http://apachemirror.wuchna.com/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz"
 
 #zip files
-TOMCAT_ZIP_FILE: "install-2020.1.tar.gz"
+TOMCAT_ZIP_FILE: "tomcat-9.0.35.tar.gz"
 
 #defining remote source
 IS_SOURCE_IS_REMOTE: yes
